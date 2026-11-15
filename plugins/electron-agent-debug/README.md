@@ -1,43 +1,37 @@
-# Electron Debug
+# Electron Agent Debug
 
-Electron Debug is a Skill-only Codex plugin for coding Agents working on Electron applications. It guides an Agent to collect bounded runtime evidence after a code change by attaching to a running local Electron application through the project's Node Inspector and renderer CDP discovery endpoints.
+Version 1.0.4 provides an Agent Skill and its self-contained JavaScript MCP runtime for attach-only diagnosis of a running local Electron application. Four tools return main-process Inspector and renderer CDP state, targets, logs and exceptions. The Agent supplies the application, regression steps and dynamic loopback endpoints, then decides what the evidence proves.
 
-The plugin distributes the Skill. It does not bundle the MCP server, register MCP automatically, start or stop Electron, execute page code, inspect the DOM, take screenshots, set breakpoints, or decide whether a business requirement passed. The MCP source and build instructions remain in [electron-agent-debug](https://github.com/longhun12346/electron-agent-debug).
+## Install and prerequisites
+
+After the PR is accepted, install the complete plugin from the community marketplace. Preserve the entire skills/electron-debug directory, including runtime, references, VERSION.md and third-party licenses. Node.js 22+ is required. Node, Electron, native binaries and optional native accelerators are not shipped.
+
+Installing the plugin does not register or launch MCP. Normal use requires no source download, dependency installation or build. Verify the package origin through an approved installation channel before running package code.
 
 ## Safe first run
 
-Start a new Codex task after installation and explicitly provide the project prerequisites:
+Use this prompt after preparing the project:
 
-`Use $electron-debug after I have started the Electron app with the project's existing command and provided the actual local Inspector/CDP discovery endpoints. Collect baseline and regression evidence for the change; report BLOCKED if a prerequisite is missing.`
+`Use $electron-debug to verify this Electron change. Use the project's existing commands and actual local Inspector/CDP endpoints. Verify the bundled runtime, configure the host as needed, collect evidence and run the project regression. Report BLOCKED if a necessary prerequisite cannot be supplied.`
 
-The Agent must supply the Electron project directory, existing start or reload command, expected behavior, regression command, required endpoint URLs, and target selection condition. Ports and paths are chosen by the Agent or the project; this plugin does not prescribe fixed values.
+The Agent determines the installed Skill's absolute path and runs:
 
-## Install
+```text
+node <absolute-skill-directory>/runtime/launch.cjs --verify
+```
 
-After this plugin is accepted into the community marketplace:
+On success, configure the host's local stdio MCP entry to run the same launcher without --verify. Refresh the host and confirm electron_attach, electron_status, electron_targets and electron_logs are visible. Host configuration paths, application commands, ports and target selectors remain environment-specific. Full setup, migration and provenance instructions are in [the bundled setup reference](skills/electron-debug/references/mcp-setup.md).
 
-`codex plugin marketplace add tonyloehr/community-plugins --ref main --sparse .agents/plugins --sparse plugins/electron-agent-debug
-codex plugin add electron-agent-debug@community-plugins`
+## Permissions, execution and data
 
-Start a new Codex task after installation so the Skill is loaded. Installing the plugin does not configure the MCP server.
+The interface declares Read, Write and Execute to disclose the workflow: read project/configuration files; update the host's MCP configuration when authorized; launch the bundled Node.js stdio process; and use the project's existing commands for preparation and regression. These labels do not grant permissions or bypass host approval. The MCP server itself does not write project files, execute page code, inspect DOM, take screenshots, set breakpoints or manage Electron's lifecycle.
 
-## Configure the MCP prerequisite
+No install hooks, credentials, OAuth flow or remote service are included. No project files or diagnostic logs are uploaded. The runtime connects only to Agent-provided loopback HTTP(S) discovery endpoints and loopback WebSockets, and retains bounded events in memory. Do not supply production endpoints or private logs.
 
-The Agent must separately build and configure the MCP server from the source repository:
+The launcher checks the manifest and SHA-256 hashes before loading MCP. Missing or inconsistent files produce PACKAGE_INTEGRITY_ERROR and no server launch. Same-package hashes detect inconsistency; they do not independently establish publisher identity or code safety. Missing application, endpoint, target or regression prerequisites produce BLOCKED rather than a code-failure verdict.
 
-1. Build the checked-out source with the repository's documented command.
-2. Configure the current host's local stdio MCP entry to run `node <actual-repository-path>/dist/index.js`.
-3. Refresh the host configuration and confirm that `electron_attach`, `electron_status`, `electron_targets`, and `electron_logs` are visible.
-4. Start or confirm the Electron application using its existing project command, with dynamic loopback Inspector/CDP endpoints.
+## Validation
 
-The exact host configuration file, repository path, Electron command, ports, and target selector are environment-specific and must be discovered by the Agent.
+Run `npm run test:electron-agent-debug` at the marketplace root. This master command validates metadata and exercises an archived package in isolated project/global layouts, all four MCP tools with network and external module loading prohibited, and corruption/missing-file rejection.
 
-## Permissions and data boundary
-
-The manifest declares `Read`. The plugin has no credentials, OAuth flow, remote service, install hook, bundled executable, or automatic file write. The Skill may guide the Agent to use the project's existing commands and configure the host's MCP entry. The MCP server accepts only loopback HTTP(S) discovery endpoints and keeps bounded diagnostic events in memory. No project files or logs are uploaded by this plugin.
-
-Do not provide production endpoints, credentials, tokens, or private logs. If the MCP host, application, endpoint, target, expected behavior, or regression operation is unavailable, report `BLOCKED` instead of treating the missing prerequisite as a code failure.
-
-## Verification
-
-The source repository provides unit and contract tests, a real Electron fixture, and an opt-in external Electron E2E harness. The external harness requires a caller-provided project checkout and Electron executable; it is not part of the plugin install and is not a default marketplace test.
+The [source release](https://github.com/longhun12346/electron-agent-debug/releases/tag/skill-v1.0.4) supplies build-provenance verification, cross-platform CI and real Electron fixture evidence. These source checks are separate from marketplace package tests and do not prove an installed Codex session or a caller's business regression passed.

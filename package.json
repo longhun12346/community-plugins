@@ -37,7 +37,7 @@
     "test:physical-engineering": "node tests/physical-engineering/run.mjs",
     "test:pcba-engineering": "npm run validate:pcba-engineering && node --test --test-concurrency=1 tests/pcba-engineering/unit/*.test.mjs tests/pcba-engineering/integration/*.test.mjs tests/pcba-engineering/security/*.test.mjs && python3 tests/pcba-engineering/support/dataset-verify.py",
     "validate:pcba-engineering": "node scripts/validate-pcba-engineering.mjs",
-    "test:electron-agent-debug": "node scripts/validate-electron-agent-debug.mjs",
+    "test:electron-agent-debug": "npm run validate:electron-agent-debug && node --test --test-concurrency=1 tests/electron-agent-debug/package.test.mjs",
     "validate:electron-agent-debug": "node scripts/validate-electron-agent-debug.mjs"
   },
   "engines": {

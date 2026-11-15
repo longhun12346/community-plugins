@@ -1,12 +1,12 @@
 {
   "name": "electron-agent-debug",
-  "version": "0.1.0",
-  "description": "Collect bounded runtime evidence from a running local Electron application through Node Inspector and Chromium DevTools Protocol.",
+  "version": "1.0.4",
+  "description": "Diagnose running local Electron apps using a bundled, attach-only MCP runtime and Agent Skill.",
   "author": {
     "name": "longhun12346",
     "url": "https://github.com/longhun12346"
   },
-  "homepage": "https://github.com/tonyloehr/community-plugins/tree/main/plugins/electron-agent-debug",
+  "homepage": "https://github.com/openai/community-plugins/tree/main/plugins/electron-agent-debug",
   "repository": "https://github.com/longhun12346/electron-agent-debug",
   "license": "MIT",
   "keywords": [
@@ -18,14 +18,16 @@
   ],
   "skills": "./skills/",
   "interface": {
-    "displayName": "Electron Debug",
-    "shortDescription": "Collect local Electron runtime evidence.",
-    "longDescription": "Guide an Agent through attach-only diagnosis of a running local Electron application. Use the four core MCP tools to inspect main-process and renderer connection state, page targets, and bounded runtime logs after code changes. The plugin does not start or control the app, register MCP automatically, execute page code, or decide whether the business behavior is correct.",
+    "displayName": "Electron Agent Debug",
+    "shortDescription": "Diagnose Electron with a bundled local MCP runtime.",
+    "longDescription": "Use the bundled Node.js MCP runtime to inspect main-process Inspector and renderer CDP state, targets, logs and exceptions. The Agent verifies the package, configures the local stdio entry and provides the running app, dynamic loopback endpoints and regression steps. Application lifecycle and final verification remain with the Agent.",
     "developerName": "longhun12346",
     "category": "Developer Tools",
     "websiteURL": "https://github.com/longhun12346/electron-agent-debug",
     "capabilities": [
-      "Read"
+      "Read",
+      "Write",
+      "Execute"
     ],
     "brandColor": "#478CBF",
     "defaultPrompt": [
